@@ -1,12 +1,14 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+
 import db from "../postgresql.js";
+import logger from '../logger.js';
 
 const authRouter = express.Router();
 
 // 회원가입
 const signup = async (req, res) => {
-    console.log("this is auth/signup.");
+    logger.info({ip: req.clientIp, type: "auth/signup"});
     let reqJson = req.body;
 
     let user_id = reqJson?.user_id; // ?: 데이터가 없으면 undefined! (서버가 죽는 것을 방지함)
@@ -41,7 +43,7 @@ const signup = async (req, res) => {
 
 // 로그인 (with refresh token)
 const login = async (req, res) => {
-    console.log('this is auth/login.');
+    logger.info({ip: req.clientIp, type: "auth/login"});
     const reqJson = req.body;
 
     const user_id = reqJson?.user_id;
@@ -91,7 +93,7 @@ const login = async (req, res) => {
 
 // 아이디 중복 확인
 const idExists = async (req, res) => {
-    console.log('this is auth/idExists.');
+    logger.info({ip: req.clientIp, type: "auth/idExists"});
     const reqJson = req.body;
     const user_id = reqJson?.user_id;
 
@@ -120,7 +122,7 @@ const idExists = async (req, res) => {
 
 // username 중복 확인
 const usernameExists = async (req, res) => {
-    console.log('this is auth/usernameExists.');
+    logger.info({ip: req.clientIp, type: "auth/usernameExists"});
     const reqJson = req.body;
     const username = reqJson?.username;
 
@@ -149,7 +151,7 @@ const usernameExists = async (req, res) => {
 
 // access token 확인 미들웨어
 const verifyToken = async (req, res, next) => {
-    console.log('this is auth/verifyToken.');
+    logger.info({ip: req.clientIp, type: "auth/verifyToken"});
     const accessToken = req.headers.authorization;
 
     try {
@@ -178,7 +180,7 @@ const verifyToken = async (req, res, next) => {
 
 // 새로운 access token 발급
 const refreshToken = async (req, res) => {
-    console.log('this is user/refreshToken.');
+    logger.info({ip: req.clientIp, type: "auth/refreshToken"});
     const refreshToken = req.body.refreshToken;
 
     try { // refresh token 기간 만료 여부 확인
@@ -222,7 +224,7 @@ const refreshToken = async (req, res) => {
 
 // 회원 탈퇴
 const delete_user = async (req, res) => {
-    console.log('this is user/delete.');
+    logger.info({ip: req.clientIp, type: "auth/delete"});
     const reqJson = req.body;
     const user_id = reqJson?.user_id;
 
@@ -242,7 +244,6 @@ const delete_user = async (req, res) => {
 
 authRouter.post('/signup', signup);
 authRouter.post('/login', login);
-authRouter.post('/verifyToken', verifyToken);
 authRouter.post('/refreshToken', refreshToken);
 authRouter.post('/delete', verifyToken, delete_user);
 authRouter.post('/idExists', idExists);
