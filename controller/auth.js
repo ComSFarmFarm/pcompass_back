@@ -17,10 +17,12 @@ const signup = async (req, res) => {
     let birth_date = reqJson?.birth_date;
     let gender = reqJson?.gender;
     let preferred_party = reqJson?.preferred_party;
+    let region = reqJson.region;
+    let city = reqJson.city;
 
     try {
-        const signupSql = `INSERT INTO users (user_id, password, username, birth_date, gender, preferred_party) VALUES ($1, encode(digest($2, 'sha256'), 'hex'), $3, $4, $5, $6)`;
-        await db.query(signupSql, [user_id, password, username, birth_date, gender, preferred_party]);
+        const signupSql = `INSERT INTO users (user_id, password, username, birth_date, gender, preferred_party, region, city) VALUES ($1, encode(digest($2, 'sha256'), 'hex'), $3, $4, $5, $6, $7, $8)`;
+        await db.query(signupSql, [user_id, password, username, birth_date, gender, preferred_party, region, city]);
         return res.status(200).json({
             message: "회원가입 성공",
         });
