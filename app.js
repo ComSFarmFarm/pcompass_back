@@ -4,6 +4,7 @@ import requestIp from 'request-ip';
 
 import logger from './logger.js';
 import authRouter from "./controller/auth.js";
+import authQuiz from "./controller/quiz.js";
 import db from "./postgresql.js";
 
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(requestIp.mw());
 
 app.use("/auth", authRouter);
+app.use("/quiz", authQuiz);
 
 db.connect(err => {
     if (err) {
