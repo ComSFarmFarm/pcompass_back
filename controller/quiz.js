@@ -6,6 +6,7 @@ const quizRouter = express.Router();
 
 // 퀴즈 문제와 보기 2개를 유저에게 제공
 const quizQuestion = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "quiz/question"});
     try {
         // 퀴즈 문제와 보기 2개를 DB에서 가져온다
         const questionQuery = `
@@ -21,7 +22,7 @@ const quizQuestion = async (req, res) => {
         }
 
         const quiz = questionResult.rows[0];
-        res.json({
+        return res.status(200).json({
             questionId: quiz.id,
             question: quiz.question,
             options: {
@@ -30,13 +31,15 @@ const quizQuestion = async (req, res) => {
             }
         });
     } catch (error) {
-        logger.error("Error fetching quiz question:", error);
-        res.status(500).json({ message: "내부 서버 에러" });
+        return res.status(500).json({ 
+            message: except.message, 
+        });
     }
 };
 
 // 퀴즈 답변을 받아와서 예상된 정답과 같으면 db에 있는 회원의 quiz_score를 받아와서 점수 +5점 해주기
 const quizAnswer = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "quiz/answer"});
     const { questionId, answer, userId } = req.body;
 
     try {
@@ -60,24 +63,25 @@ const quizAnswer = async (req, res) => {
             const updateScoreQuery = `
                 UPDATE users 
                 SET quiz_score = quiz_score + 5 
-                WHERE id = $1 
+                WHERE user_id = $1 
                 RETURNING quiz_score;
             `;
             const scoreResult = await db.query(updateScoreQuery, [userId]);
 
-            res.json({
+            return res.status(200).json({
                 message: "정답입니다!",
                 newScore: scoreResult.rows[0].quiz_score
             });
         } else {
-            res.json({
+            return res.status(200).json({
                 message: "오답입니다!",
                 newScore: null
             });
         }
     } catch (error) {
-        logger.error("Error checking quiz answer:", error);
-        res.status(500).json({ message: "내부 서버 에러" });
+        return res.status(500).json({ 
+            message: except.message,
+        });
     }
 };
 
