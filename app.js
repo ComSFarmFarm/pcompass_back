@@ -5,6 +5,7 @@ import requestIp from 'request-ip';
 import logger from './logger.js';
 import authRouter from "./controller/auth.js";
 import colorRouter from "./controller/colorTest.js";
+import articleRouter from "./controller/news_scraping.js";
 import db from "./postgresql.js";
 
 
@@ -20,6 +21,7 @@ app.use(requestIp.mw());
 
 app.use("/auth", authRouter);
 app.use("/color",colorRouter);
+app.use("/news", articleRouter);
 
 db.connect(err => {
     if (err) {
