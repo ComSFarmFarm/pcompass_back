@@ -20,13 +20,14 @@ async function fetchArticles() {
       const articleUrl = titleElement.attr('href');
       const pressElement = $(element).find('div.sa_text div.sa_text_info');
       const press = pressElement.find('div.sa_text_press').text().trim();
-      //const summary = $(element).find('div.sa_text_lede').text().trim();
+      const summary = $(element).find('div.sa_text_lede').text().trim();
 
-      if (title && articleUrl && press) {
+      if (title && articleUrl && press && summary) {
         newArticles.push({
           title,
           url: articleUrl,
-          press
+          press,
+          summary
         });
       }
     });
