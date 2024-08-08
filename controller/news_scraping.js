@@ -22,15 +22,16 @@ async function fetchArticles() {
       const sentence = $(element).find('div.sa_text_lede').text().trim();
 
       // 이미지 URL 추출
-      //const imageElement = $(element).find('img._LAZY_LOADING');
-      //const imageUrl = imageElement.attr('src');
+      const imageElement = $(element).find('div.sa_thumb_inner img');
+      const imageUrl = imageElement.attr('data-src');
 
-      if (title && articleUrl && press && sentence) {
+      if (title && articleUrl && press && sentence && imageUrl) {
         newArticles.push({
           title,
           url: articleUrl,
           press,
-          sentence
+          sentence,
+          imageUrl: imageUrl
         });
       }
     });
