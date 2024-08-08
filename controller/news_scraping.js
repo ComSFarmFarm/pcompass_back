@@ -4,6 +4,15 @@ import cheerio from 'cheerio';
 
 const articleRouter = express.Router();
 
+function truncateSentence(sentence) {
+  const new_text = sentence.replace(/"/g, '');
+  const maxLength = 100;
+  if (new_text.length > maxLength) {
+      return new_text.slice(0, maxLength).trim() + '...';
+  }
+  return new_text;
+}
+
 let articles = [];
 
 async function fetchArticles() {
@@ -24,7 +33,7 @@ async function fetchArticles() {
 
       if (title && articleUrl && press && summary) {
         newArticles.push({
-          title,
+          title: n_title,
           url: articleUrl,
           press,
           summary
