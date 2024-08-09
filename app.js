@@ -4,6 +4,7 @@ import requestIp from 'request-ip';
 
 import logger from './logger.js';
 import authRouter from "./controller/auth.js";
+import articleRouter from "./controller/news_scraping.js";
 import db from "./postgresql.js";
 
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(requestIp.mw());
 
 app.use("/auth", authRouter);
+app.use("/news", articleRouter);
 
 db.connect(err => {
     if (err) {
@@ -31,6 +33,7 @@ app.get('/', (req, res) => {
     logger.info({ip: req.clientIp, type: "/"});
     return res.send('Hello, World!');
 })
+
 
 app.listen(PORT, HOST, () => {
     console.log(`[LOG] Server is running on ${PORT}`);
