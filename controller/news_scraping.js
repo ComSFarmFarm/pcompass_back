@@ -1,8 +1,18 @@
+
 import express from "express";
 import axios from 'axios';
 import cheerio from 'cheerio';
 
 const articleRouter = express.Router();
+
+function truncateSentence(sentence) {
+  const new_text = sentence.replace(/"/g, '');
+  const maxLength = 100;
+  if (new_text.length > maxLength) {
+      return new_text.slice(0, maxLength).trim() + '...';
+  }
+  return new_text;
+}
 
 let articles = [];
 
@@ -11,7 +21,6 @@ async function fetchArticles() {
     const url = 'https://news.naver.com/section/100'; // 스크래핑하려는 웹 페이지 URL
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
-
     const newArticles = [];
 
     $('li.sa_item._SECTION_HEADLINE').each((index, element) => {
@@ -20,18 +29,24 @@ async function fetchArticles() {
       const articleUrl = titleElement.attr('href');
       const pressElement = $(element).find('div.sa_text div.sa_text_info');
       const press = pressElement.find('div.sa_text_press').text().trim();
-      const summary = $(element).find('div.sa_text_lede').text().trim();
+      const sentence = $(element).find('div.sa_text_lede').text().trim();
 
-      if (title && articleUrl && press && summary) {
+      // 이미지 URL 추출
+      const imageElement = $(element).find('div.sa_thumb_inner img');
+      const imageUrl = imageElement.attr('data-src');
+
+      if (title && articleUrl && press && sentence && imageUrl) {
+        const n_title = truncateSentence(title);
+        const n_sentence = truncateSentence(sentence);
         newArticles.push({
-          title,
+          title: n_title,
           url: articleUrl,
           press,
-          summary
+          text: n_sentence,
+          imageUrl: imageUrl
         });
       }
     });
-
     articles = newArticles;
     // console.log('Articles updated:', articles);
   } catch (error) {
@@ -56,7 +71,7 @@ const getArticles = async (req, res) => {
 // 최초 호출로 기사 데이터를 업데이트 (서버 시작 시)
 fetchArticles();
 
-const updateInterval = 1 * 60 * 1000; // 30 minutes마다 업데이트
+const updateInterval = 30 * 60 * 1000; // 30 minutes마다 업데이트
 setInterval(fetchArticles, updateInterval);
 
 articleRouter.get('/title', getArticles);
