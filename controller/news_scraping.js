@@ -33,7 +33,7 @@ async function fetchArticles() {
     });
 
     articles = newArticles;
-    console.log('Articles updated:', articles);
+    // console.log('Articles updated:', articles);
   } catch (error) {
     console.error('Error fetching articles:', error);
   }
