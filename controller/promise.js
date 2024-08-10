@@ -1,7 +1,4 @@
 import express from "express";
-import axios from 'axios';
-import qs from 'qs'
-import convert from 'xml-js';
 import OpenAI from "openai";
 
 import logger from '../logger.js';

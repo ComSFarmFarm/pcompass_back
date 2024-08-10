@@ -1,6 +1,6 @@
 import express from "express";
 import axios from 'axios';
-import cheerio from 'cheerio';
+import { load } from 'cheerio';
 
 const articleRouter = express.Router();
 
