@@ -11,11 +11,16 @@ const quizQuestion = async (req, res) => {
     logger.info({ip: req.clientIp, type: "quiz/question"});
     try {
         // 퀴즈 문제와 보기 2개를 DB에서 가져온다
+        // const questionQuery = `
+        //     SELECT id, question, option_a, option_b 
+        //     FROM quiz_questions 
+        //     ORDER BY RANDOM() 
+        //     LIMIT 1;
+        // `;
+
         const questionQuery = `
             SELECT id, question, option_a, option_b, level 
             FROM quiz_questions 
-            ORDER BY RANDOM() 
-            LIMIT 1;
         `;
 
         const questionResult = await db.query(questionQuery);
