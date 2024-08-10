@@ -8,7 +8,7 @@ import logger from '../logger.js';
 import promises from '../voteInfo/promise.js';
 
 const promiseRouter = express.Router();
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+// const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
 const summary = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/summary"});
