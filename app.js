@@ -2,10 +2,11 @@ import express from "express";
 import cors from 'cors';
 import requestIp from 'request-ip';
 
+import db from "./postgresql.js";
 import logger from './logger.js';
 import authRouter from "./controller/auth.js";
+import promiseRouter from "./controller/promise.js";
 import articleRouter from "./controller/news_scraping.js";
-import db from "./postgresql.js";
 
 
 const app  = express();
@@ -19,7 +20,6 @@ app.use(cors());
 app.use(requestIp.mw());
 
 app.use("/auth", authRouter);
-app.use("/news", articleRouter);
 
 db.connect(err => {
     if (err) {
