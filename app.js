@@ -4,9 +4,11 @@ import requestIp from 'request-ip';
 
 import db from "./postgresql.js";
 import logger from './logger.js';
+
 import authRouter from "./controller/auth.js";
+import quizRouter from "./controller/quiz.js";
+import articleRouter from "./controller/news_scraping.js";;
 import promiseRouter from "./controller/promise.js";
-import articleRouter from "./controller/news_scraping.js";
 
 
 const app  = express();
@@ -22,6 +24,8 @@ app.use(requestIp.mw());
 app.use("/auth", authRouter);
 app.use("/news", articleRouter);
 app.use('/promise', promiseRouter);
+app.use("/quiz", quizRouter);
+
 
 db.connect(err => {
     if (err) {
