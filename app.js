@@ -20,6 +20,8 @@ app.use(cors());
 app.use(requestIp.mw());
 
 app.use("/auth", authRouter);
+app.use("/news", articleRouter);
+app.use('/promise', promiseRouter);
 
 db.connect(err => {
     if (err) {

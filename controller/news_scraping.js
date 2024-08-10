@@ -1,7 +1,6 @@
-
 import express from "express";
 import axios from 'axios';
-import cheerio from 'cheerio';
+import { load } from 'cheerio';
 
 const articleRouter = express.Router();
 
@@ -20,7 +19,7 @@ async function fetchArticles() {
   try {
     const url = 'https://news.naver.com/section/100'; // 스크래핑하려는 웹 페이지 URL
     const { data } = await axios.get(url);
-    const $ = cheerio.load(data);
+    const $ = load(data);
     const newArticles = [];
 
     $('li.sa_item._SECTION_HEADLINE').each((index, element) => {
