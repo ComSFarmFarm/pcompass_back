@@ -5,6 +5,7 @@ import logger from '../logger.js';
 
 
 const promiseRouter = express.Router();
+const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
 const candidates = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/candidates"});
