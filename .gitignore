@@ -3,3 +3,5 @@ package-lock.json
 /node_modules
 .gitignore
 logs
+konlpy_script.py
+note.js
