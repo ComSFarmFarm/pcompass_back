@@ -9,11 +9,16 @@ const quizQuestion = async (req, res) => {
     logger.info({ip: req.clientIp, type: "quiz/question"});
     try {
         // 퀴즈 문제와 보기 2개를 DB에서 가져온다
+        // const questionQuery = `
+        //     SELECT id, question, option_a, option_b 
+        //     FROM quiz_questions 
+        //     ORDER BY RANDOM() 
+        //     LIMIT 1;
+        // `;
+
         const questionQuery = `
             SELECT id, question, option_a, option_b 
             FROM quiz_questions 
-            ORDER BY RANDOM() 
-            LIMIT 1;
         `;
         const questionResult = await db.query(questionQuery);
 
@@ -40,7 +45,13 @@ const quizQuestion = async (req, res) => {
 // 퀴즈 답변을 받아와서 예상된 정답과 같으면 db에 있는 회원의 quiz_score를 받아와서 점수 +5점 해주기
 const quizAnswer = async (req, res) => {
     logger.info({ip: req.clientIp, type: "quiz/answer"});
-    const { questionId, answer, userId } = req.body;
+    const reqJson = req.body;
+
+    const questionId = reqJson?.questionId;
+    const answer = reqJson?.answer;
+    const userId = reqJson?.userId;
+
+    console.log(questionId, answer, userId);
 
     try {
         // 정답을 DB에서 가져오기
