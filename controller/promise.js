@@ -72,6 +72,28 @@ const detail = async (req, res) => {
     });
 };
 
+const keywords = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "promise/keywords"});
+    const reqJson = req.body;
+    const party = reqJson?.party;
+
+    return res.status(200).json({
+        "party": party,
+        "words": [
+            {"text": "주거 지원", "value": 100},
+            {"text": "재생에너지", "value": 90},
+            {"text": "저출산", "value": 90},
+            {"text": "과학기술", "value": 80},
+            {"text": "의료 지원", "value": 70},
+            {"text": "노동시간 단축", "value": 68},
+            {"text": "사회 안전망", "value": 26},
+            {"text": "탄소중립", "value": 22},
+            {"text": "동물복지", "value": 20},
+            {"text": "육아", "value": 15},
+        ]
+    })
+}
+
 // const getCandidateInfo = async (req, res) => {
 //     logger.info({ip: req.clientIp, type: "promise/candidateInfo"});
 //     const reqJson = req.body;
@@ -152,5 +174,6 @@ const detail = async (req, res) => {
 
 promiseRouter.post('/summary', summary);
 promiseRouter.post('/detail', detail);
+promiseRouter.post('/keywords', keywords);
 
 export default promiseRouter;
