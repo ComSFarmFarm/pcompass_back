@@ -1,4 +1,5 @@
 import express from "express";
+
 import db from "../postgresql.js";
 import logger from '../logger.js';
 
@@ -10,7 +11,7 @@ const quizQuestion = async (req, res) => {
     try {
         // 퀴즈 문제와 보기 2개를 DB에서 가져온다
         const questionQuery = `
-            SELECT id, question, option_a, option_b 
+            SELECT id, question, option_a, option_b, level 
             FROM quiz_questions 
             ORDER BY RANDOM() 
             LIMIT 1;
@@ -29,7 +30,8 @@ const quizQuestion = async (req, res) => {
             options: {
                 a: quiz.option_a,
                 b: quiz.option_b
-            }
+            },
+            level: quiz.level
         });
     } catch (error) {
         return res.status(500).json({ 
