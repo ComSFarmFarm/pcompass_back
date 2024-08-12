@@ -54,7 +54,7 @@ const quizAnswer = async (req, res) => {
     try {
         // 정답을 DB에서 가져오기
         const answerQuery = `
-            SELECT correct_answer 
+            SELECT correct_answer, level
             FROM quiz_questions 
             WHERE id = $1;
         `;
@@ -65,13 +65,14 @@ const quizAnswer = async (req, res) => {
         }
 
         const correctAnswer = answerResult.rows[0].correct_answer;
+        const score = answerResult.rows[0].level;
 
         // 유저의 답변이 맞는지 확인
         if (answer === correctAnswer) {
             // 유저의 quiz_score 업데이트
             const updateScoreQuery = `
                 UPDATE users 
-                SET quiz_score = quiz_score + 5 
+                SET quiz_score = quiz_score + ${score} 
                 WHERE user_id = $1 
                 RETURNING quiz_score;
             `;
