@@ -49,8 +49,6 @@ const quizAnswer = async (req, res) => {
     const answer = reqJson?.answer;
     const userId = reqJson?.userId;
 
-    console.log(questionId, answer, userId);
-
     try {
         // 정답을 DB에서 가져오기
         const answerQuery = `
@@ -88,14 +86,41 @@ const quizAnswer = async (req, res) => {
                 newScore: null
             });
         }
-    } catch (error) {
+    } catch (except) {
         return res.status(500).json({ 
             message: except.message,
         });
     }
 };
 
+const quizScore = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "quiz/score"});
+    const reqJson = req.body;
+
+    const userId = reqJson?.userId;
+
+    try {
+        // 정답을 DB에서 가져오기
+        const answerQuery = `
+            SELECT quiz_score
+            FROM users
+            WHERE user_id = $1;
+        `;
+
+        const scoreResult = await db.query(answerQuery, [userId]);
+
+        return res.status(200).json({
+            score: scoreResult.rows[0].quiz_score,
+        });
+    } catch (except) {
+        return res.status(500).json({ 
+            message: except.message,
+        });
+    }
+}
+
 quizRouter.get('/question', quizQuestion);
 quizRouter.post('/answer', quizAnswer);
+quizRouter.post('/score', quizScore);
 
 export default quizRouter;
