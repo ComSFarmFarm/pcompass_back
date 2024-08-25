@@ -9,16 +9,16 @@ const authRouter = express.Router();
 // 회원가입
 const signup = async (req, res) => {
     logger.info({ip: req.clientIp, type: "auth/signup"});
-    let reqJson = req.body;
+    const reqJson = req.body;
 
-    let user_id = reqJson?.user_id; // ?: 데이터가 없으면 undefined! (서버가 죽는 것을 방지함)
-    let password = reqJson?.password;
-    let username = reqJson?.username;
-    let birth_date = reqJson?.birth_date;
-    let gender = reqJson?.gender;
-    let preferred_party = reqJson?.preferred_party;
-    let region = reqJson.region;
-    let city = reqJson.city;
+    const user_id = reqJson?.user_id; // ?: 데이터가 없으면 undefined! (서버가 죽는 것을 방지함)
+    const password = reqJson?.password;
+    const username = reqJson?.username;
+    const birth_date = reqJson?.birth_date;
+    const gender = reqJson?.gender;
+    const preferred_party = reqJson?.preferred_party;
+    const region = reqJson.region;
+    const city = reqJson.city;
 
     try {
         const signupSql = `INSERT INTO users (user_id, password, username, birth_date, gender, preferred_party, region, city) VALUES ($1, encode(digest($2, 'sha256'), 'hex'), $3, $4, $5, $6, $7, $8)`;
