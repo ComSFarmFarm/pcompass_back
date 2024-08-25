@@ -2,97 +2,119 @@ import express from "express";
 import OpenAI from "openai";
 
 import logger from '../logger.js';
-import promises from '../voteInfo/promise.js';
+
 
 const promiseRouter = express.Router();
-// const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+
 
 const summary = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/summary"});
     const reqJson = req.body;
-    const party = reqJson?.party;
-    
-    const detail = promises[party];
-    const result = [
-        "민생 챙기기: 전 국민 주거 보장, 교통비 절감, 근로소득자 세부담 완화, 비정규직 차별 해소, 청년 일자리 지원, 양육비 문제 해결 등을 통해 민생 전반을 지원.",
-        "저출산 해결: 결혼·출산·양육 지원을 위한 주거 및 금융 지원, 아이돌봄 서비스 강화, 여성 경력단절 방지와 남성 육아휴직 강화로 저출산 문제 해결.",
-        "기후위기 대처: 재생에너지 전환, 탄소중립 산업 전환, 탈플라스틱 추진, 농촌을 재생에너지 거점으로 육성하여 기후위기에 대처.",
-        "혁신성장과 균형발전: R&D 투자 확대, 첨단산업 육성, AI·미래 모빌리티 강화, 지역균형발전과 자치분권 달성, 서울대 10개 만들기 추진으로 지역 발전 도모.",
-        "국민 건강과 행복: 간병비 지원 확대, 공공·필수·지역 의료 강화, 전국민 고용보험과 산재보험 확대, 국민의 문화예술 및 스포츠 접근성 향상.",
-        "청년·여성 지원: 청년의 취업 지원 강화, 채용 과정의 성차별 근절, 여성의 경력 단절 방지, 청년 내일채움공제 재도입 등을 통해 청년과 여성의 사회적 지위 향상.",
-        "주거 안정: 기본주택 100만 호 조성, 전세사기 피해자 지원, 맞춤형 주거정책 시행으로 주거 안정을 도모.",
-        "일자리 창출: 비정규직 차별 해소, 동일가치노동 동일임금 추진, 청년의 양질의 일자리 지원, 주 4일제 도입으로 일자리 질 개선.",
-        "재생에너지 확대: RE100 활성화, 탄소중립산업법 제정, 농촌의 재생에너지 산업 거점화로 재생에너지 중심의 에너지 전환 실현.",
-        "문화와 관광 지원: 국민휴가지원, 문화예술 창작권 보장, 생활체육시설 확충, 동물 복지 강화로 국민의 문화·관광 생활 질을 높임.",
-    ];
 
-    // for (let i = 0; i < detail.length; i++) {
-    //     const promise = detail[i];
-    //     try {
-    //         const response = await openai.chat.completions.create({
-    //             model: "gpt-4o-mini",
-    //             message: [
-    //                 {
-    //                     role: "system",
-    //                     content: "You are a helpful assistant that summarizes text.",
-    //                 },
-    //                 {
-    //                     role: "user",
-    //                     content: `Summarize the following text: ${promise["content"]}`,
-    //                 },
-    //             ],
-    //         });
-    //         const summary = response.choices[0];
-    //         console.log(summary);
-    //         result.push({"title": promise["title"], "content": summary});
-    //     } catch (except) {
-    //         console.log(except);
-    //         return res.status(500).json({
-    //             message: except.message,
-    //         })
-    //     } 
-    // }
+    // const code = reqJson?.code;
+    const region = reqJson?.region;
+    const name = reqJson?.name;
 
-
-    return res.status(200).json({
-        "party": party,
-        "summary": result,
+    axios.post('http://localhost:5000/promise/summary', {
+        // "code": code,
+        "region": region,
+        "name": name,
+    }).then(response => {
+        console.log(response.data);
+        return res.status(200).json({
+            "summary": response.data
+        });
+    }).catch(except => {
+        return res.status(500).json({
+            message: except.message,
+        });
     });
 }
 
 const detail = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/detail"});
     const reqJson = req.body;
-    const party = reqJson?.party;
-    const detail = promises[party];
 
-    return res.status(200).json({
-        "party": party,
-        "detail": detail,
-    });
+    const region = reqJson?.region;
+    const name = reqJson?.name;
+
+    try {
+        // flask 서버로 요청
+        const response = await axios({
+            url: 'http://localhost:5000/promise/detail',
+            method: 'POST',
+            responseType: 'arraybuffer', // pdf 파일을 바이너리 형태로 받음.
+            data: {
+                "region": region,
+                "name": name,
+            }
+        });
+
+        // 클라이언트에게 PDF 파일 응답
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=file.pdf');
+        res.send(response.data);
+    } catch (except) {
+        return res.status(500).json({
+            message: except.message,
+        });
+    }
+
+    // axios.post('http://localhost:5000/promise/detail', {
+    //     // "code": code,
+    //     "region": region,
+    //     "name": name,
+    // }).then(response => {
+    //     console.log(response);
+    //     // return res.status(200).json({
+    //     //     "summary": response.data
+    //     // });
+    // }).catch(except => {
+    //     return res.status(500).json({
+    //         message: except.message,
+    //     });
+    // });
+
+    // return res.status(200).json({
+    //     "party": party,
+    //     "detail": detail,
+    // });
 };
 
 const keywords = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/keywords"});
     const reqJson = req.body;
-    const party = reqJson?.party;
 
-    return res.status(200).json({
-        "party": party,
-        "words": [
-            {"text": "주거 지원", "value": 100},
-            {"text": "재생에너지", "value": 90},
-            {"text": "저출산", "value": 90},
-            {"text": "과학기술", "value": 80},
-            {"text": "의료 지원", "value": 70},
-            {"text": "노동시간 단축", "value": 68},
-            {"text": "사회 안전망", "value": 26},
-            {"text": "탄소중립", "value": 22},
-            {"text": "동물복지", "value": 20},
-            {"text": "육아", "value": 15},
-        ]
-    })
+    // const code = reqJson?.code;
+    const region = reqJson?.region;
+    const name = reqJson?.name;
+
+    axios.post('http://localhost:5000/promise/keywords', {
+        // "code": code,
+        "region": region,
+        "name": name,
+    }).then(response => {
+        let jsonMatch = response.data.match(/\[[\s\S]*?\]/);
+        let result = jsonMatch[0];
+
+        result.replace(/`/g, '')
+            .replace(/(\r\n|\n|\r)/g, '')  
+            .trim();
+
+        result = JSON.parse(result);
+
+        return res.status(200).json({
+            "words": result
+        });
+    }).catch(except => {
+        return res.status(500).json({
+            message: except.message,
+        });
+    });
 }
+
+
+
 
 // const getCandidateInfo = async (req, res) => {
 //     logger.info({ip: req.clientIp, type: "promise/candidateInfo"});
