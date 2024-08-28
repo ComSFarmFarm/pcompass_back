@@ -28,12 +28,12 @@ const summary = async (req, res) => {
     const reqJson = req.body;
 
     // const code = reqJson?.code;
-    // const region = reqJson?.region;
+    const region = reqJson?.region;
     const name = reqJson?.name;
 
     axios.post('http://localhost:5000/promise/summary', {
         // "code": code,
-        // "region": region,
+        "region": region,
         "name": name,
     }).then(response => {
         console.log(response.data);
@@ -51,7 +51,7 @@ const detail = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/detail"});
     const reqJson = req.body;
 
-    // const region = reqJson?.region;
+    const region = reqJson?.region;
     const name = reqJson?.name;
 
     try {
@@ -61,7 +61,7 @@ const detail = async (req, res) => {
             method: 'POST',
             responseType: 'arraybuffer', // pdf 파일을 바이너리 형태로 받음.
             data: {
-                // "region": region,
+                "region": region,
                 "name": name,
             }
         });
@@ -102,12 +102,12 @@ const keywords = async (req, res) => {
     const reqJson = req.body;
 
     // const code = reqJson?.code;
-    // const region = reqJson?.region;
+    const region = reqJson?.region;
     const name = reqJson?.name;
 
     axios.post('http://localhost:5000/promise/keywords', {
         // "code": code,
-        // "region": region,
+        "region": region,
         "name": name,
     }).then(response => {
         let jsonMatch = response.data.match(/\[[\s\S]*?\]/);
