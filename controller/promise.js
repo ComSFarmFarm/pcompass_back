@@ -6,6 +6,22 @@ import logger from '../logger.js';
 
 const promiseRouter = express.Router();
 
+const candidates = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "promise/candidates"});
+
+    axios.get('http://localhost:5000/promise/candidates')
+        .then(response => {
+            console.log(response.data);
+            return res.status(200).json({
+                "candidateNames": response.data
+            });
+        }).catch(except => {
+            return res.status(500).json({
+                message: except.message,
+            });
+        })
+}
+
 
 const summary = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/summary"});
@@ -194,6 +210,7 @@ const keywords = async (req, res) => {
 // promiseRouter.post('/candidateInfo', getCandidateInfo);
 
 
+promiseRouter.get('/candidates', candidates);
 promiseRouter.post('/summary', summary);
 promiseRouter.post('/detail', detail);
 promiseRouter.post('/keywords', keywords);
