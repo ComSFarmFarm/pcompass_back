@@ -6,18 +6,34 @@ import logger from '../logger.js';
 
 const promiseRouter = express.Router();
 
+const candidates = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "promise/candidates"});
+
+    axios.get('http://localhost:5000/promise/candidates')
+        .then(response => {
+            console.log(response.data);
+            return res.status(200).json({
+                "candidateNames": response.data
+            });
+        }).catch(except => {
+            return res.status(500).json({
+                message: except.message,
+            });
+        })
+}
+
 
 const summary = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/summary"});
     const reqJson = req.body;
 
     // const code = reqJson?.code;
-    const region = reqJson?.region;
+    // const region = reqJson?.region;
     const name = reqJson?.name;
 
     axios.post('http://localhost:5000/promise/summary', {
         // "code": code,
-        "region": region,
+        // "region": region,
         "name": name,
     }).then(response => {
         console.log(response.data);
@@ -35,7 +51,7 @@ const detail = async (req, res) => {
     logger.info({ip: req.clientIp, type: "promise/detail"});
     const reqJson = req.body;
 
-    const region = reqJson?.region;
+    // const region = reqJson?.region;
     const name = reqJson?.name;
 
     try {
@@ -45,7 +61,7 @@ const detail = async (req, res) => {
             method: 'POST',
             responseType: 'arraybuffer', // pdf 파일을 바이너리 형태로 받음.
             data: {
-                "region": region,
+                // "region": region,
                 "name": name,
             }
         });
@@ -62,7 +78,7 @@ const detail = async (req, res) => {
 
     // axios.post('http://localhost:5000/promise/detail', {
     //     // "code": code,
-    //     "region": region,
+        // "region": region,
     //     "name": name,
     // }).then(response => {
     //     console.log(response);
@@ -86,12 +102,12 @@ const keywords = async (req, res) => {
     const reqJson = req.body;
 
     // const code = reqJson?.code;
-    const region = reqJson?.region;
+    // const region = reqJson?.region;
     const name = reqJson?.name;
 
     axios.post('http://localhost:5000/promise/keywords', {
         // "code": code,
-        "region": region,
+        // "region": region,
         "name": name,
     }).then(response => {
         let jsonMatch = response.data.match(/\[[\s\S]*?\]/);
@@ -194,6 +210,7 @@ const keywords = async (req, res) => {
 // promiseRouter.post('/candidateInfo', getCandidateInfo);
 
 
+promiseRouter.get('/candidates', candidates);
 promiseRouter.post('/summary', summary);
 promiseRouter.post('/detail', detail);
 promiseRouter.post('/keywords', keywords);
