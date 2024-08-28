@@ -12,9 +12,9 @@ const candidates = async (req, res) => {
     axios.get('http://localhost:5000/promise/candidates')
         .then(response => {
             console.log(response.data);
-            return res.status(200).json({
-                "candidateNames": response.data
-            });
+            return res.status(200).json(
+                response.data
+            );
         }).catch(except => {
             return res.status(500).json({
                 message: except.message,
