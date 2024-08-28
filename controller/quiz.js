@@ -119,8 +119,62 @@ const quizScore = async (req, res) => {
     }
 }
 
+const quizResult = async (req, res) => {
+    logger.info({ip: req.clientIp, type: "quiz/result"});
+    const username = "김예똥";
+
+    try {
+        const totalRankQuery = `
+            WITH ranked_users AS (
+                SELECT 
+                    username,
+                    quiz_score,
+                    ROW_NUMBER() OVER (ORDER BY quiz_score DESC) AS rank
+                FROM users
+            )` ;
+
+        const top4RankQuery = totalRankQuery + `
+            SELECT 
+                rank,
+                username,
+                quiz_score
+            FROM ranked_users
+            WHERE rank <= 4
+            ORDER BY rank;
+        `
+        const myRankQuery = totalRankQuery + `
+            SELECT 
+                rank,
+                username,
+                quiz_score
+            FROM ranked_users
+            WHERE username = $1
+        `;
+
+        const top4Rank = await db.query(top4RankQuery);
+        const myRank = await db.query(myRankQuery, [username]);
+
+        console.log(top4Rank.rows);
+        console.log(myRank.rows);
+
+        return res.status(200).json({
+            "top4": top4Rank.rows,
+            "my_rank": myRank.rows
+        })
+    
+
+    } catch(except) {
+        return res.status(500).json({ 
+            message: except.message,
+        });
+    }
+
+}
+
+
 quizRouter.get('/question', quizQuestion);
 quizRouter.post('/answer', quizAnswer);
 quizRouter.post('/score', quizScore);
+quizRouter.get('/result', quizResult);
 
 export default quizRouter;
