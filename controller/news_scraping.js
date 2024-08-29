@@ -45,7 +45,7 @@ const getArticles = async (req, res) => {
     if (articles.length === 0) {
       await fetchArticles();
     }
-    res.json(articles);
+    res.status(200).json(articles); // 200 OK 상태 코드와 함께 응답
   } catch (error) {
     console.error('Error in getArticles handler:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -55,9 +55,9 @@ const getArticles = async (req, res) => {
 // 최초 호출로 기사 데이터를 업데이트 (서버 시작 시)
 fetchArticles();
 
-const updateInterval = 1 * 60 * 1000; // 30 minutes in milliseconds
+const updateInterval = 1 * 60 * 1000; // 30 minutes마다 업데이트
 setInterval(fetchArticles, updateInterval);
 
-articleRouter.post('/title', getArticles);
+articleRouter.get('/title', getArticles);
 
 export default articleRouter;
