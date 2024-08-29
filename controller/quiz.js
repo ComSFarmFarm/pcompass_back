@@ -2,6 +2,7 @@ import express from "express";
 
 import db from "../postgresql.js";
 import logger from '../logger.js';
+import { verifyToken } from './auth.js';
 
 const quizRouter = express.Router();
 
@@ -47,7 +48,8 @@ const quizAnswer = async (req, res) => {
 
     const questionId = reqJson?.questionId;
     const answer = reqJson?.answer;
-    const userId = reqJson?.userId;
+    const username = reqJson?.username;
+    console.log(username);
 
     try {
         // 정답을 DB에서 가져오기
@@ -71,10 +73,10 @@ const quizAnswer = async (req, res) => {
             const updateScoreQuery = `
                 UPDATE users 
                 SET quiz_score = quiz_score + ${score} 
-                WHERE user_id = $1 
+                WHERE username = $1 
                 RETURNING quiz_score;
             `;
-            const scoreResult = await db.query(updateScoreQuery, [userId]);
+            const scoreResult = await db.query(updateScoreQuery, [username]);
 
             return res.status(200).json({
                 message: "정답입니다!",
@@ -93,35 +95,11 @@ const quizAnswer = async (req, res) => {
     }
 };
 
-const quizScore = async (req, res) => {
-    logger.info({ip: req.clientIp, type: "quiz/score"});
-    const reqJson = req.body;
-
-    const userId = reqJson?.userId;
-
-    try {
-        // 정답을 DB에서 가져오기
-        const answerQuery = `
-            SELECT quiz_score
-            FROM users
-            WHERE user_id = $1;
-        `;
-
-        const scoreResult = await db.query(answerQuery, [userId]);
-
-        return res.status(200).json({
-            score: scoreResult.rows[0].quiz_score,
-        });
-    } catch (except) {
-        return res.status(500).json({ 
-            message: except.message,
-        });
-    }
-}
-
 const quizResult = async (req, res) => {
     logger.info({ip: req.clientIp, type: "quiz/result"});
-    const username = "김예똥";
+    const reqJson = req.body;
+
+    const username = reqJson?.username;
 
     try {
         const totalRankQuery = `
@@ -161,20 +139,16 @@ const quizResult = async (req, res) => {
             "top4": top4Rank.rows,
             "my_rank": myRank.rows
         })
-    
-
     } catch(except) {
         return res.status(500).json({ 
             message: except.message,
         });
     }
-
 }
 
 
 quizRouter.get('/question', quizQuestion);
-quizRouter.post('/answer', quizAnswer);
-quizRouter.post('/score', quizScore);
-quizRouter.get('/result', quizResult);
+quizRouter.post('/answer', verifyToken, quizAnswer);
+quizRouter.get('/result', verifyToken, quizResult);
 
 export default quizRouter;
