@@ -33,11 +33,9 @@ const resultSave = async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        if (client) {
-            client.release();  // 연결 종료
-        }
-    }
+     } //finally {
+    //         await db.end();  // 연결 종료
+    // }
 }
 
 colorRouter.get('/colorResult/:result', verifyToken, resultSave);
