@@ -1,27 +1,25 @@
 import db from "../postgresql.js";
 import express from 'express';
-import { verifyToken } from '../controller/auth.js';
 
 const colorRouter = express.Router();
 
 const resultSave = async (req, res) => {
     const colorResult = req.params.result;
-    const user = req.body.username;
     let client;
     
     try {
         client = await db.connect();  // 데이터베이스 연결
-        const queryText = "UPDATE users SET color_result = $1 WHERE username = $2;";
-        await client.query(queryText, [colorResult, user]);
+        const queryText = "UPDATE users SET color_result = $1 WHERE username = '김예똥';";
+        await client.query(queryText, [colorResult]);
 
         const ageResult = `
         WITH user_age AS (
-            SELECT FLOOR((2024 - EXTRACT(YEAR FROM birth_date)) / 10) AS age FROM users WHERE username = $1)
+            SELECT FLOOR((2024 - EXTRACT(YEAR FROM birth_date)) / 10) AS age FROM users WHERE username = '김예똥')
         SELECT color_result FROM users
             WHERE (FLOOR((2024 - EXTRACT(YEAR FROM birth_date)) / 10)) = (SELECT age FROM user_age);`;
 
 
-        const result = await client.query(ageResult, [user]);
+        const result = await client.query(ageResult);
         console.log('Query result:', result);
 
         const colorResults = result.rows.map(row => row.color_result);
@@ -40,6 +38,6 @@ const resultSave = async (req, res) => {
     }
 }
 
-colorRouter.get('/colorResult/:result', verifyToken, resultSave);
+colorRouter.get('/colorResult/:result', resultSave);
 
 export default colorRouter;

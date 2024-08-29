@@ -253,5 +253,5 @@ authRouter.post('/delete', verifyToken, delete_user);
 authRouter.post('/idExists', idExists);
 authRouter.post('/usernameExists', usernameExists);
 
-export { verifyToken };
+
 export default authRouter;
