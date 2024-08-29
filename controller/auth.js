@@ -154,12 +154,14 @@ const usernameExists = async (req, res) => {
 // access token 확인 미들웨어
 const verifyToken = async (req, res, next) => {
     logger.info({ip: req.clientIp, type: "auth/verifyToken"});
-    const accessToken = req.headers.authorization;
+    // const accessToken = req.headers?.authorization;
 
     try {
-        const result = jwt.verify(accessToken, process.env.JWT_SECRET_KEY); // .verify: 토큰 인증하는 메서드
-        req.body.user_id = result.user_id;
-        req.body.username = result.username;
+        // 프론트 access token 미구현 이슈
+        // const result = jwt.verify(accessToken, process.env.JWT_SECRET_KEY); // .verify: 토큰 인증하는 메서드
+        // req.body.user_id = result.user_id;
+        // req.body.username = result.username;
+        req.body.username = "김예똥";
         return next();
     } catch (except) {
         if (except.name === "TokenExpiredError") {
